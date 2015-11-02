@@ -89,21 +89,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	<!-- import application script -->
 	
 	
-	<link rel="stylesheet" type="text/css" href="http://localhost:8085/preference/css/bootstrap-clockpicker.min.css">
-	<link rel="stylesheet" type="text/css" href="http://localhost:8085/preference/css/github.min.css">
+	<link rel="stylesheet" type="text/css" href="http://localhost:8085/Vaptor-Frontend-Preference/css/bootstrap-clockpicker.min.css">
+	<link rel="stylesheet" type="text/css" href="http://localhost:8085/Vaptor-Frontend-Preference/css/github.min.css">
 	
-	<link rel="stylesheet" type="text/css" href="http://localhost:8085/preference/css/custom.css">
+	<link rel="stylesheet" type="text/css" href="http://localhost:8085/Vaptor-Frontend-Preference/css/custom.css">
 	
-	<script type="text/javascript" src="http://localhost:8085/preference/js/applicationScript.js"></script>
+	<script type="text/javascript" src="http://localhost:8085/Vaptor-Frontend-Preference/js/applicationScript.js"></script>
 	
-	<script type="text/javascript" src="http://localhost:8085/preference/js/bootstrap-clockpicker.min.js"></script>
+	<script type="text/javascript" src="http://localhost:8085/Vaptor-Frontend-Preference/js/bootstrap-clockpicker.min.js"></script>
 	
 	
 
   
 </head>
 <body>
-	<script src="http://localhost:8085/preference/js/LifemirrorPlayer.js"></script>
+	<script src="http://localhost:8085/Vaptor-Frontend-Preference/js/LifemirrorPlayer.js"></script>
 
   <!-- container for actual page content -->
   <div class="container" id="main-content">
