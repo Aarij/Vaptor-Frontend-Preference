@@ -32,115 +32,58 @@
 
 var client;
 
-
-var init = function() {
-		
-	console.log("init function UserPreferences");
-	client = new iwc.Client();
-	/*var iwcCallback = function(intent) {
-		// define your reactions on incoming iwc events here
-		console.log(intent);
-	};*/
-  
-	//client = new Las2peerWidgetLibrary("http://127.0.0.1:7077/userpreferences", iwcCallback);
-  
-
-	/*$('#input123').on('click', function() {
-		getPreferences();
-	})*/
-}
-
-
-// getPreferences
-var getPreferences = function(){
-  var preferences = null;
-  var preferences = null;
-  client.sendRequest("GET", "127.0.0.1:7077", preferences, "application/json", {}, true,
-  function(data, type) {
-    console.log(data);
-  },
-  function(error) {
-    console.log(error);
-  });
-  return preferences;
-}
-
-
 $(document).ready(function() {
-	init();
-	//var lang="*";
+	
+	client = new iwc.Client();
 	var duration="*";
 	var noOfExp = 1;
 	
-	
-	// OpenID Connect Button - Step 4: implement a callback function
-	//function signinCallback(result) {
-		console.log("In callback");
-		if(localStorage.access_token!=null){
-		//if(result === "success"){
-			console.log("callback Success");
-			//document.getElementById("userprofile").style.display = "inline";
-			//document.getElementById("searchdiv").style.display = "inline";
-			//initialize();
-			//getVideos(document.getElementById("searchString").value);
+	if(localStorage.access_token!=null){
+		
+		function verifyAccessToken(){
+			console.log("in verifyAccessToken_search");
+			$.ajax({
+				url: "https://api.learning-layers.eu/o/oauth2/userinfo",
+				type: "GET",
+				dataType:'text',
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader("Authorization", "Bearer "+localStorage.access_token);
+				},
+				success: function(value) {
 			
-			
-			
-			
-			$("#savebtn").click(function(event){
-				console.log("access Token: "+localStorage.access_token);
-				updateUserProfile(localStorage.access_token);
-				//document.getElementById("userprofilediv").style.display = "none";
-				
-				console.log(document.getElementById("exp1").value);
-				//console.log(document.getElementById("exp2").value);
-				console.log(document.getElementById("lvl1").value);
-				//console.log(document.getElementById("lvl2").value);
-				console.log(duration);
-				console.log("lang"+document.getElementById("language").value);
-				
-				var intent = {
-					"component":"",
-					"sender":"",
-					"data":"http://data.org/some/data",
-					"dataType":"text/xml",
-					"action":"search_intent",
-					"categories":["category1","category2"],
-					"flags":["PUBLISH_GLOBAL"],
-					"extras":{"key1":"val1","key2":2}
-				}
-				
-				if(iwc.util.validateIntent(intent)){
-					client.publish(intent);
-				}
-				
+					$("#savebtn").click(function(event){
+						console.log("access Token: "+localStorage.access_token);
+						updateUserProfile(localStorage.access_token);
+						
+					});
+				},
+				statusCode: {
+					401: function() {
+						
+						document.getElementById("notification").innerHTML = "<span style=\"background:#C90016; float:left; color:#FFF; width:100%; text-align:center;\">You are not logged in!</span>";
+						document.getElementById("savebtn").disabled = true;
+						
+					},
+					404: function() {
+						
+						document.getElementById("notification").innerHTML = "<span style=\"background:#C90016; float:left; color:#FFF; width:100%; text-align:center;\">Something went wrong, please try again!</span>";
+						document.getElementById("savebtn").disabled = true;
+					}
+				},
+				error: function(e){console.log(e);}
 			});
-			$("#upmenu").click(function(event){
-				document.getElementById("userprofilediv").style.display = "block";
-			});
-			
-			
-			//playVideos();
-			// at this point, developers have access to several pieces of information
-			// relevant to OpenID Connect (see ./oidc-button.js)
-			/*console.log("OpenID Connect Provider Configuration:");
-			console.log(oidc_provider_config);
-			console.log("OpenID Connect User Info:");
-			console.log(oidc_userinfo);
-			console.log("OpenID Connect ID Token:");
-			console.log(oidc_idtoken);
-			
-			$("#status").html("Hello, " + oidc_userinfo.name + "!");*/
-		} else {
-			console.log("not signed in...");
-			console.log(result);
-			$("#status").html("Do I know you?!");
 		}
-	//}
+		
+		verifyAccessToken();
+
+	} else {
+		console.log("not signed in...");
+		console.log(result);
+		$("#status").html("Do I know you?!");
+	}
 	
 	
 	$('.clockpicker').clockpicker().find('input').change(function(){
-		alert(this.value);
 		duration=this.value;
 	});
 	var input = $('#single-input').clockpicker({
@@ -151,107 +94,89 @@ $(document).ready(function() {
 	});
 
 
-		
-	//$(document).ready(function() {
-
-		var max_fields      = 10; //maximum input boxes allowed
-		var wrapper_exp         = $(".exp_fields_wrap"); //Fields wrapper
-		var wrapper_lvl         = $(".lvl_fields_wrap"); //Fields wrapper
-		var add_button      = $(".add_field_button"); //Add button ID
-		
-		//var x = 2; //initial text box count
-		$(add_button).click(function(e){ //on add input button click
-			console.log("add button clicked");
-			e.preventDefault();
-			if(noOfExp < max_fields){ //max input box allowed
-				
-				noOfExp++; //text box increment
-				//$(wrapper).append('<div><input type="text" name="mytext[]"/><a href="#" class="remove_field">Remove</a></div>'); //add input box
-				$(wrapper_exp).append('<div id="domain_' + noOfExp +'" class = "bottom_space row wide50"> <span>Domain of expertise</span> <form action="#"> <select class="form-control" id="exp' + noOfExp +'"> <option id="*" value="*" selected>Select</option> <option id="co" value="co">Construction</option> <option id="he"  value="he">Health</option> <option id="ed" value="ed">Education</option> </select> </form> <a href="#" class="remove_field">Remove</a></div>');
-			
-				$(wrapper_lvl).append('<div id="lvl_domain_'+ noOfExp +'" class = "bottom_space row wide50"> <span>Level of expertise</span> <form action="#"> <select class="form-control" id="lvl' + noOfExp +'"> <option id="*" value="*" selected>Select</option> <option id="no" value="1">Novice</option> <option id="in" value="2">Intermediate</option> <option id="ex" value="3">Expert</option> </select> </form> </div>');
-				
-			
-			}
-		});
-		
-		$(wrapper_exp).on("click",".remove_field", function(e){ //user click on remove text
-			e.preventDefault(); 
-			
-			var name = $(this).parent('div').attr('id');
-			$("#"+name).remove();
-			$("#lvl_"+name).remove();
-			//$(this).parent('div').remove(); 
-			noOfExp--;
-			
-		});
+	var max_fields      = 10; //maximum input boxes allowed
+	var wrapper_exp         = $(".exp_fields_wrap"); //Fields wrapper
+	var wrapper_lvl         = $(".lvl_fields_wrap"); //Fields wrapper
+	var add_button      = $(".add_field_button"); //Add button ID
 	
+	//var x = 2; //initial text box count
+	$(add_button).click(function(e){ //on add input button click
+		console.log("add button clicked");
+		e.preventDefault();
+		if(noOfExp < max_fields){ //max input box allowed
+			
+			noOfExp++; //text box increment
+			$(wrapper_exp).append('<div id="domain_' + noOfExp +'" class = "bottom_space row wide75"> <span>Domain of expertise</span> <form action="#"> <select class="form-control" id="exp' + noOfExp +'"> <option id="*" value="*" selected>Select</option> <option id="co" value="co">Construction</option> <option id="he"  value="he">Health</option> <option id="ed" value="ed">Education</option> </select> </form> </div>');
 		
-	//});
+			$(wrapper_lvl).append('<div id="lvl_domain_'+ noOfExp +'" class = "bottom_space row wide75"> <span>Level of expertise</span> <form action="#"> <select class="form-control" id="lvl' + noOfExp +'"> <option id="*" value="*" selected>Select</option> <option id="no" value="0.25">Novice</option> <option id="in" value="0.5">Intermediate</option> <option id="ex" value="0.75">Expert</option> </select> </form> <a href="#" class="remove_field">Remove</a></div>');
+			
+		
+		}
+	});
+	
+	$(wrapper_exp).on("click",".remove_field", function(e){ //user click on remove text
+		e.preventDefault(); 
+		
+		var name = $(this).parent('div').attr('id');
+		$("#"+name).remove();
+		$("#lvl_"+name).remove();
+		//$(this).parent('div').remove(); 
+		noOfExp--;
+		
+	});
+	
 	
 	function updateUserProfile(access_token){
 
-	var lang = document.getElementById("language");
-	//var location = document.getElementById("location");
-	var location = document.getElementById("location").value;
-	//var duration = document.getElementById("dur");
-	
-	if(location=="") location = "*";
-	console.log("loc: "+ location);
-	var jsonpreferences = '{"Authorization":"Bearer '+access_token+'","language":"'+lang+'","location":"'+location+'","duration":"'+duration+'"';
-	
-	for(loop=0;loop<noOfExp;loop++){
-	
-		var exp= document.getElementById("exp"+(loop+1));
-		var lvl= document.getElementById("lvl"+(loop+1));
+		var lang = document.getElementById("language").value;
+		var location = document.getElementById("location").value;
 		
-		jsonpreferences += ',"exp'+(loop+1)+'":"'+exp.value+'","lvl'+(loop+1)+'":"'+lvl.value+'"';
-		//var exp2= document.getElementById("exp2");
-		//var lvl2= document.getElementById("lvl2");
-	}
-	jsonpreferences +=',"noOfExp":"'+noOfExp+'"}';
-	//var jsonpreferences = '{"username":"'+username+'","language":"'+lang+'","location":"'+location+'","duration":"'+duration+'","exp1":"'+exp1.value+'","exp2":"'+exp2.value+'","lvl1":"'+lvl1.value+'","lvl2":"'+lvl2.value+'"}'
-	
-	console.log(jsonpreferences);
-	
-	$.ajax({
-	
-	//var jsonpreferences = '{"username":"'+username+'","language":"'+lang+'","location":"'+location+'","duration":"'+duration.value+'","exp1":"'+exp1.value+'","exp2":"'+exp2.value+'","lvl1":"'+lvl1.value+'","lvl2":"'+lvl2.value+'"}';
-	
-	url: "http://eiche.informatik.rwth-aachen.de:7077/preference",
-		//url: "http://eiche.informatik.rwth-aachen.de:7074/adapter/postUserProfile?Username="+username+"&language="+lang.value+"&location="+location.value+"&duration="+duration.value+"&exp1="+exp1.value+"&exp2="+exp2.value+"&lvl1="+lvl1.value+"&lvl2="+lvl2.value,
-		type: "POST",
-		dataType:'text',
-		data: jsonpreferences,
-		beforeSend: function(xhr) {
-			//xhr.setRequestHeader("Username",username);
-		},
-		success: function(value) {
-			//username = value;
-			//localStorage.setItem("clvitraUser",value);
-			//ocation.value = "";
-			//language.value = "";
-			//duration.value = "";
-			document.getElementById("savelbl").innerHTML="Preferences successfully saved";
-			console.log("success");
+		if(location=="") location = "*";
+		var jsonpreferences = '{"Authorization":"Bearer '+access_token+'","language":"'+lang+'","location":"'+location+'","duration":"'+duration+'"';
+		
+		for(loop=0;loop<noOfExp;loop++){
+		
+			var exp= document.getElementById("exp"+(loop+1));
+			var lvl= document.getElementById("lvl"+(loop+1));
 			
-			//$("#nameField").text(localStorage.clvitraUser)
-		},
-		statusCode: {
-			401: function() {
-				alert("ERROR! Please login again.");
-				//window.location = "/clvitra/";
+			jsonpreferences += ',"exp'+(loop+1)+'":"'+exp.value+'","lvl'+(loop+1)+'":"'+lvl.value+'"';
+		}
+		jsonpreferences +=',"noOfExp":"'+noOfExp+'"}';
+		
+		$.ajax({
+		
+		url: "http://eiche.informatik.rwth-aachen.de:7077/preference",
+			type: "POST",
+			dataType:'text',
+			data: jsonpreferences,
+			success: function(value) {
+				document.getElementById("savelbl").innerHTML="Preferences successfully saved";
+				
+				var intent = {
+					"component":"",
+					"sender":"",
+					"data":"",
+					"dataType":"text/xml",
+					"action":"preferenceUpdate",
+					"categories":["category1","category2"],
+					"flags":["PUBLISH_LOCAL"],
+					"extras":{"key1":"val1","key2":2}
+				}
+				
+				if(iwc.util.validateIntent(intent)){
+					client.publish(intent);
+				}
+				
 			},
-			404: function() {
-				alert("ERROR! Please login again.");
-				//window.location = "/clvitra/";
-			}
-			
-		},
-		error: function(e){console.log(e);}
-	});
-
-}
-	
-  
+			statusCode: {
+				401: function() {
+					document.getElementById("notification").innerHTML = "<span style=\"background:#C90016; float:left; color:#FFF; width:100%; text-align:center;\">You are not logged in!</span>";
+				},
+				404: function() {
+					document.getElementById("notification").innerHTML = "<span style=\"background:#C90016; float:left; color:#FFF; width:100%; text-align:center;\">Something went wrong, please try again!</span>";
+				}
+			},
+			error: function(e){console.log(e);}
+		});
+	}
 });
